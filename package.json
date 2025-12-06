@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build && npm run copy-assets",
     "preview": "vite preview",
-    "copy-assets": "copyfiles -u 1 public/**/* dist/"
+    "copy-assets": "copyfiles -u 1 public/**/* dist/",
+    "deploy:worker": "wrangler deploy --config wrangler-worker.toml"
   },
   "dependencies": {
     "@vueuse/core": "^10.1.2",
@@ -16,6 +17,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
     "copyfiles": "^2.4.1",
-    "vite": "^4.4.5"
+    "vite": "^4.4.5",
+    "wrangler": "^3.0.0"
   }
 }

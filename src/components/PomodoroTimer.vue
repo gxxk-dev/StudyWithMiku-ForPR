@@ -5,6 +5,10 @@
       :class="{ 'settings-open': showSettings }"
       @click="toggleSettings"
     >
+      <div class="online-indicator">
+        <span class="online-dot" :class="{ connected: isConnected }"></span>
+        <span class="online-text">{{ onlineCount }}</span>
+      </div>
       <div class="clock-display">
         <span class="minutes">{{ formattedMinutes }}</span>
         <span class="separator">:</span>
@@ -128,6 +132,10 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useOnlineCount } from '../composables/useOnlineCount.js'
+
+const WS_URL = 'wss://study-with-miku-onlinecounter.1839192968.workers.dev/ws'
+const { onlineCount, isConnected } = useOnlineCount(WS_URL)
 
 const STATUS = {
   FOCUS: 'focus',
@@ -307,6 +315,33 @@ onUnmounted(() => {
   gap: 1rem;
   color: white;
   font-family: 'Courier New', monospace;
+}
+
+.online-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-right: 1rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.online-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #666;
+  transition: background 0.3s ease;
+}
+
+.online-dot.connected {
+  background: #4caf50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+}
+
+.online-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.9;
 }
 
 .countdown-clock:hover {
