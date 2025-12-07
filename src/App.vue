@@ -38,6 +38,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useFullscreen } from '@vueuse/core'
 import { getAllSongs } from './data/songs.js'
 import { loadScript, loadStyle, preloadVideos } from './utils/cache.js'
+import { setAPlayerInstance } from './utils/eventBus.js'
 import PomodoroTimer from './components/PomodoroTimer.vue'
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
@@ -165,6 +166,7 @@ onMounted(() => {
       playerElement.style.pointerEvents = 'auto'
     }
     aplayerInitialized.value = true
+    setAPlayerInstance(aplayer.value)
   }
   preloadAllVideos()
   setTimeout(() => {

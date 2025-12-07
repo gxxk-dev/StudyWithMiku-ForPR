@@ -133,6 +133,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useOnlineCount } from '../composables/useOnlineCount.js'
+import { duckMusicForNotification } from '../utils/eventBus.js'
 
 const WS_URL = 'wss://online.study.mikugame.icu/ws'
 const { onlineCount, isConnected } = useOnlineCount(WS_URL)
@@ -258,7 +259,11 @@ const handleTimerComplete = () => {
   }, 1000)
 }
 
-const playNotificationSound = () => {
+const playNotificationSound = async () => {
+  duckMusicForNotification(3000)
+  
+  await new Promise(resolve => setTimeout(resolve, 200))
+  
   const audio = new Audio('/BreakOrWork.mp3')
   audio.play()
 }
