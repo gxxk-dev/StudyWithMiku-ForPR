@@ -1,5 +1,5 @@
 const METING_API = 'https://api.injahow.cn/meting/'
-const DEFAULT_PLAYLIST_ID = '17537611175'
+const DEFAULT_PLAYLIST_ID = '17543418420'
 
 export { DEFAULT_PLAYLIST_ID }
 

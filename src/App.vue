@@ -9,6 +9,8 @@
         autoplay 
         muted 
         loop
+        playsinline
+        webkit-playsinline
         @loadeddata="onVideoLoaded"
       ></video>
     </transition>
