@@ -1,6 +1,14 @@
+const COUNTER_NAME = 'global-apac'
+const COUNTER_LOCATION_HINT = 'apac'
+
 const getCounterStub = (env) => {
-  const id = env.ONLINE_COUNTER.idFromName('global')
-  return env.ONLINE_COUNTER.get(id)
+  if (!env.ONLINE_COUNTER) {
+    throw new Error('ONLINE_COUNTER binding is missing')
+  }
+
+  return env.ONLINE_COUNTER.getByName(COUNTER_NAME, {
+    locationHint: COUNTER_LOCATION_HINT,
+  })
 }
 
 export { getCounterStub }
