@@ -98,11 +98,22 @@ const onUITouchEnd = () => {
 }
 
 const videoRef = ref(null)
-const videos = [
-  '/1.mp4',
-  '/2.mp4',
-  '/3.mp4'
-]
+
+const isR2Domain = window.location.hostname === 'study.mikugame.icu'
+const R2_BASE_URL = 'https://studycdn.mikugame.icu/mp4'
+
+const videos = isR2Domain
+  ? [
+      `${R2_BASE_URL}/1.mp4`,
+      `${R2_BASE_URL}/2.mp4`,
+      `${R2_BASE_URL}/3.mp4`
+    ]
+  : [
+      '/1.mp4',
+      '/2.mp4',
+      '/3.mp4'
+    ]
+
 const savedVideoIndex = getVideoIndex()
 const currentVideoIndex = ref(savedVideoIndex < videos.length ? savedVideoIndex : 0)
 const currentVideo = ref(videos[currentVideoIndex.value])
