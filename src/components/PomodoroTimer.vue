@@ -13,6 +13,7 @@
         <span class="online-dot" :class="{ connected: isConnected }"></span>
         <span class="online-text">{{ onlineCount }}</span>
       </div>
+      <div class="system-time">{{ systemTime }}</div>
       <div class="clock-display">
         <span class="minutes">{{ formattedMinutes }}</span>
         <span class="separator">:</span>
@@ -177,6 +178,13 @@ const { playlistId, platform, applyCustomPlaylist, resetToLocal, songs, DEFAULT_
 const inputPlaylistId = ref('')
 const selectedPlatform = ref(platform.value)
 
+const currentTime = ref(new Date())
+const systemTime = computed(() => {
+  const hours = currentTime.value.getHours().toString().padStart(2, '0')
+  const minutes = currentTime.value.getMinutes().toString().padStart(2, '0')
+  return `${hours}:${minutes}`
+})
+
 const applyPlaylist = async () => {
   if (!inputPlaylistId.value) return
   await applyCustomPlaylist(selectedPlatform.value, inputPlaylistId.value)
@@ -227,6 +235,7 @@ watch(breakDuration, (newVal) => {
 })
 
 let timer = null
+let timeUpdateInterval = null
 
 const formattedMinutes = computed(() => {
   return Math.floor(timeLeft.value / 60).toString().padStart(2, '0')
@@ -359,11 +368,18 @@ onMounted(() => {
   if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission()
   }
+
+  timeUpdateInterval = setInterval(() => {
+    currentTime.value = new Date()
+  }, 1000)
 })
 
 onUnmounted(() => {
   if (timer) {
     clearInterval(timer)
+  }
+  if (timeUpdateInterval) {
+    clearInterval(timeUpdateInterval)
   }
 })
 </script>
@@ -414,6 +430,14 @@ onUnmounted(() => {
   font-size: 0.9rem;
   font-weight: 500;
   opacity: 0.9;
+}
+
+.system-time {
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.8;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .countdown-clock:hover {
