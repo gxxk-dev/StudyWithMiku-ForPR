@@ -125,3 +125,5 @@ export const clearCache = (type) => {
 export const clearAllCache = () => {
   Object.keys(cache).forEach(type => clearCache(type))
 }
+
+export { cache }

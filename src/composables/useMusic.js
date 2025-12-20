@@ -1,6 +1,7 @@
 import { ref } from 'vue'
-import { fetchPlaylist, getStoredConfig, saveConfig, DEFAULT_PLAYLIST_ID } from '../services/meting.js'
+import { fetchPlaylist, getStoredConfig, saveConfig, DEFAULT_PLAYLIST_ID, getCachedPlaylist, cachePlaylist } from '../services/meting.js'
 import { getAllSongs } from '../data/songs.js'
+import { prefetchPlaylistAudios } from '../utils/audioPrefetch.js'
 
 const MUSIC_SOURCE = {
   LOCAL: 'local',
@@ -22,6 +23,10 @@ const PLATFORMS = [
 ]
 
 export const useMusic = () => {
+  const persistMetingState = (platform, id) => {
+    saveConfig(platform, id)
+    metingConfig.value = { platform, id }
+  }
 
   const loadLocalSongs = () => {
     const allSongs = getAllSongs()
@@ -31,19 +36,48 @@ export const useMusic = () => {
       url: song.src,
       cover: song.album && song.album.includes('SEKAI') ? '/4.webp' : '/123.webp'
     }))
+    prefetchPlaylistAudios(songs.value, { platform: MUSIC_SOURCE.LOCAL, id: 'local' })
   }
 
-  const loadMetingSongs = async (platform, id) => {
+  const loadMetingSongs = async (platform, id, options = {}) => {
+    const { forceRefresh = false } = options
     loading.value = true
+
+    const startPrefetch = (playlistSongs) => {
+      if (!playlistSongs?.length) return
+      prefetchPlaylistAudios(playlistSongs, { platform, id, force: forceRefresh })
+    }
+
+    const cachedEntry = getCachedPlaylist(platform, id)
+    const hasCachedSongs = Boolean(cachedEntry?.songs?.length)
+
+    if (hasCachedSongs) {
+      songs.value = cachedEntry.songs
+      persistMetingState(platform, id)
+      startPrefetch(cachedEntry.songs)
+      if (!forceRefresh && !cachedEntry.isExpired) {
+        loading.value = false
+        return
+      }
+    }
+
     try {
       const playlist = await fetchPlaylist(platform, id)
       if (playlist.length > 0) {
         songs.value = playlist
-        saveConfig(platform, id)
-        metingConfig.value = { platform, id }
+        cachePlaylist(platform, id, playlist)
+        persistMetingState(platform, id)
+        startPrefetch(playlist)
+      } else if (hasCachedSongs) {
+        persistMetingState(platform, id)
+        startPrefetch(cachedEntry.songs)
       }
     } catch (error) {
       console.error('Load meting songs error:', error)
+      if (hasCachedSongs) {
+        persistMetingState(platform, id)
+        startPrefetch(cachedEntry.songs)
+      }
     } finally {
       loading.value = false
     }
@@ -66,7 +100,7 @@ export const useMusic = () => {
   const updateMetingPlaylist = async (platform, id) => {
     currentSource.value = MUSIC_SOURCE.METING
     localStorage.setItem('music_source', MUSIC_SOURCE.METING)
-    await loadMetingSongs(platform, id)
+    await loadMetingSongs(platform, id, { forceRefresh: true })
   }
 
   const setPlaylistId = (id) => {
@@ -89,7 +123,7 @@ export const useMusic = () => {
     setPlaylistId(id)
     currentSource.value = MUSIC_SOURCE.METING
     localStorage.setItem('music_source', MUSIC_SOURCE.METING)
-    await loadMetingSongs(p, id)
+    await loadMetingSongs(p, id, { forceRefresh: true })
   }
 
   const resetToLocal = async () => {
@@ -97,7 +131,7 @@ export const useMusic = () => {
     localStorage.setItem('music_source', MUSIC_SOURCE.METING)
     setPlatform('netease')
     resetPlaylistId()
-    await loadMetingSongs('netease', DEFAULT_PLAYLIST_ID)
+    await loadMetingSongs('netease', DEFAULT_PLAYLIST_ID, { forceRefresh: true })
   }
 
   return {
