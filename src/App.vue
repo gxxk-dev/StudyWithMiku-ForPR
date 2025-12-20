@@ -153,38 +153,11 @@ onMounted(() => {
       await initAPlayer()
       return
     }
-    
+
     try {
-      await loadSongs()
-      const container = document.getElementById('aplayer')
-      if (!container || !songs.value.length) return
-
-      const savedMusicIndex = getMusicIndex()
-      aplayer.value = new APlayer({
-        container,
-        fixed: true,
-        autoplay: true,
-        audio: songs.value,
-        lrcType: 0,
-        theme: '#83a4ff',
-        loop: 'all',
-        order: 'list',
-        preload: 'auto',
-        volume: 0.7,
-        mutex: true,
-        listFolded: true,
-        listMaxHeight: '200px'
-      })
-
-      if (savedMusicIndex >= 0 && savedMusicIndex < songs.value.length) {
-        aplayer.value.list.switch(savedMusicIndex)
-      }
-
-      aplayer.value.on('listswitch', (e) => {
-        saveMusicIndex(e.index)
-      })
-
-      setAPlayerInstance(aplayer.value)
+      await loadStyle('./APlayer.min.css')
+      await loadScript('./APlayer.min.js')
+      await initAPlayer()
     } catch (error) {
       console.error('加载 APlayer 资源失败:', error)
     }
