@@ -55,8 +55,6 @@ const getAllowedOrigins = () => {
   return [
     'https://study.mikugame.icu',
     'https://study.mikumod.com',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000'
   ]
 }
 
@@ -76,23 +74,6 @@ const getCorsHeaders = (origin) => {
   return {}
 }
 
-const verifyToken = (request, env) => {
-  const url = new URL(request.url)
-  const tokenFromUrl = url.searchParams.get('token')
-  
-  if (tokenFromUrl && tokenFromUrl === env.WS_TOKEN) {
-    return true
-  }
-  
-  const authHeader = request.headers.get('Authorization')
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.slice(7)
-    return token === env.WS_TOKEN
-  }
-  
-  return false
-}
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url)
@@ -108,10 +89,6 @@ export default {
     if (url.pathname === '/ws') {
       if (!isOriginAllowed(origin)) {
         return new Response('Forbidden', { status: 403 })
-      }
-
-      if (!verifyToken(request, env)) {
-        return new Response('Unauthorized', { status: 401 })
       }
 
       const upgradeHeader = request.headers.get('Upgrade')
