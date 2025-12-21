@@ -1,11 +1,11 @@
 import { Hono } from 'hono'
 import { OnlineCounter } from './online-counter.js'
-import { corsGuard, handleCorsOptions, resolveAllowedOrigins } from './middleware/cors.js'
+import { corsGuard, handleCorsOptions } from './middleware/cors.js'
 import { getCounterStub } from './services/counter.js'
 
 const app = new Hono()
 
-const handleOptionsRoute = (c) => handleCorsOptions(c.req.raw, resolveAllowedOrigins(c.req.raw))
+const handleOptionsRoute = (c) => handleCorsOptions(c.req.raw)
 
 app.use('/ws', corsGuard)
 app.use('/count', corsGuard)
