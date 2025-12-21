@@ -44,7 +44,8 @@ import { setAPlayerInstance, setHoveringUI, isHoveringUI } from './utils/eventBu
 import { useMusic } from './composables/useMusic.js'
 import { getVideoIndex, saveVideoIndex, getMusicIndex, saveMusicIndex } from './utils/userSettings.js'
 import PomodoroTimer from './components/PomodoroTimer.vue'
-import aplayerStyleUrl from 'aplayer/dist/APlayer.min.css?url'
+
+const APLAYER_CSS_URL = 'https://unpkg.com/aplayer@1.10.1/dist/APlayer.min.css'
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 const showControls = ref(true)
@@ -196,7 +197,7 @@ onMounted(() => {
   }
   const loadAPlayer = async () => {
     try {
-      await loadStyle(aplayerStyleUrl)
+      await loadStyle(APLAYER_CSS_URL)
       await initAPlayer()
     } catch (error) {
       console.error('初始化 APlayer 失败:', error)
