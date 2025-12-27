@@ -10,9 +10,7 @@ const platform = ref(localStorage.getItem('music_platform') || 'netease')
 
 const PLATFORMS = [
   { value: 'netease', label: '网易云' },
-  { value: 'tencent', label: 'QQ音乐' },
-  { value: 'kugou', label: '酷狗' },
-  { value: 'kuwo', label: '酷我' }
+  { value: 'tencent', label: 'QQ音乐' }
 ]
 
 export const useMusic = () => {
