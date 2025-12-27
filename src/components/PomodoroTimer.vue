@@ -427,7 +427,7 @@ const {
 // 初始化 WebSocket URL
 const initialWsUrl = getActiveServerUrl()
 const { onlineCount, isConnected, reconnectToServer } = useOnlineCount(initialWsUrl)
-const { playlistId, platform, applyCustomPlaylist, resetToLocal, songs, DEFAULT_PLAYLIST_ID, PLATFORMS } = useMusic()
+const { playlistId, platform, applyCustomPlaylist, resetToDefault, songs, DEFAULT_PLAYLIST_ID, PLATFORMS } = useMusic()
 
 const inputPlaylistId = ref('')
 const selectedPlatform = ref(platform.value)
@@ -451,7 +451,7 @@ const applyPlaylist = async () => {
 
 const resetPlaylist = async () => {
   inputPlaylistId.value = ''
-  await resetToLocal()
+  await resetToDefault()
   const ap = getAPlayerInstance()
   if (ap) {
     ap.list.clear()
