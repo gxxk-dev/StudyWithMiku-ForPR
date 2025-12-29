@@ -213,7 +213,7 @@ onMounted(() => {
       order: 'list',
       preload: 'auto',
       volume: 0.7,
-      mutex: true,
+      mutex: false,
       listFolded: false,
       listMaxHeight: '200px',
       width: '300px'
